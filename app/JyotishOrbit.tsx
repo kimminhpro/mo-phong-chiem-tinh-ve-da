@@ -583,7 +583,9 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
                 </small>
                 <strong>
                   {chosen.id === "rahu" || chosen.id === "ketu"
-                    ? `β 0° · quỹ đạo Mặt Trăng`
+                    ? chosen.id === "rahu"
+                      ? "Nút Bắc · quỹ đạo Moon đi lên qua hoàng đạo"
+                      : "Nút Nam · quỹ đạo Moon đi xuống qua hoàng đạo"
                     : `β ${formatLatitude(chosen.latitude)} · ${formatDistance(chosen.distance)}`}
                 </strong>
               </div>

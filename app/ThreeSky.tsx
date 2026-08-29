@@ -62,6 +62,7 @@ const NAKSHATRA_RING_INNER = 6.4;
 const NAKSHATRA_RING_OUTER = 6.8;
 const PADA_RING_INNER = 6.8;
 const PADA_RING_OUTER = 7.04;
+const LUNAR_ORBIT_INCLINATION = (5.145 * Math.PI) / 180;
 const BODY_VISUAL_SIZE: Record<string, number> = {
   sun: 0.31,
   moon: 0.22,
@@ -1108,7 +1109,6 @@ export function ThreeSky({
             depthWrite: false,
           }),
         );
-        moonOrbit.position.y = 0.025;
         moonOrbit.visible = false;
         moonOrbit.renderOrder = 2;
         ecliptic.add(moonOrbit);
@@ -1476,14 +1476,29 @@ export function ThreeSky({
     const moonPhase = getMoonPhase(grahas);
     const moonOrbitLayer = moonOrbitRef.current;
     const moon = grahas.find((graha) => graha.id === "moon");
-    if (moonOrbitLayer && moon) {
+    const rahu = grahas.find((graha) => graha.id === "rahu");
+    if (moonOrbitLayer && moon && rahu) {
       const radius = distanceToRadius(moon.distance);
+      const nodeLongitude = (rahu.longitude * Math.PI) / 180;
+      const cosInclination = Math.cos(LUNAR_ORBIT_INCLINATION);
+      const sinInclination = Math.sin(LUNAR_ORBIT_INCLINATION);
       const positions = moonOrbitLayer.orbit.geometry.getAttribute(
         "position",
       ) as import("three").BufferAttribute;
       for (let index = 0; index < moonOrbitLayer.segments; index += 1) {
-        const angle = (index / moonOrbitLayer.segments) * Math.PI * 2;
-        positions.setXYZ(index, Math.sin(angle) * radius, 0, -Math.cos(angle) * radius);
+        const anomaly = (index / moonOrbitLayer.segments) * Math.PI * 2;
+        const nodeComponent = Math.cos(anomaly);
+        const transverseComponent = Math.sin(anomaly) * cosInclination;
+        positions.setXYZ(
+          index,
+          radius *
+            (nodeComponent * Math.sin(nodeLongitude) +
+              transverseComponent * Math.cos(nodeLongitude)),
+          radius * Math.sin(anomaly) * sinInclination,
+          radius *
+            (-nodeComponent * Math.cos(nodeLongitude) +
+              transverseComponent * Math.sin(nodeLongitude)),
+        );
       }
       positions.needsUpdate = true;
       moonOrbitLayer.orbit.computeLineDistances();
