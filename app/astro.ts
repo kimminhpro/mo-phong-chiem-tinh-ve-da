@@ -128,21 +128,21 @@ export function getMoonPhase(grahas: Graha[]): MoonPhase | null {
         ? "Amavasya"
         : TITHI_NAMES[(tithi - 1) % 15];
   const phaseName =
-    illumination < 0.02
-      ? "Trăng non"
-      : illumination < 0.48
-        ? paksha === "Shukla"
-          ? "Trăng lưỡi liềm đầu tháng"
-          : "Trăng lưỡi liềm cuối tháng"
-        : illumination < 0.52
-          ? paksha === "Shukla"
-            ? "Thượng huyền"
-            : "Hạ huyền"
-          : illumination < 0.98
-            ? paksha === "Shukla"
-              ? "Trăng khuyết dần sáng"
-              : "Trăng khuyết dần tối"
-            : "Trăng tròn";
+    elongation < 22.5 || elongation >= 337.5
+      ? "New Moon · Trăng non"
+      : elongation < 67.5
+        ? "Waxing Crescent · Trăng lưỡi liềm đầu tháng"
+        : elongation < 112.5
+          ? "First Quarter · Thượng huyền"
+          : elongation < 157.5
+            ? "Waxing Gibbous · Trăng khuyết dần sáng"
+            : elongation < 202.5
+              ? "Full Moon · Trăng tròn"
+              : elongation < 247.5
+                ? "Waning Gibbous · Trăng khuyết dần tối"
+                : elongation < 292.5
+                  ? "Third Quarter · Hạ huyền"
+                  : "Waning Crescent · Trăng lưỡi liềm cuối tháng";
 
   return { elongation, illumination, tithi, paksha, tithiName, phaseName };
 }

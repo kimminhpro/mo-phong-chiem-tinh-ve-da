@@ -28,6 +28,8 @@ type PlanetNode = {
   halo: import("three").Mesh;
   latitudeGuide: import("three").Line;
   moonMaterial?: import("three").MeshStandardMaterial;
+  moonPhaseCanvas?: HTMLCanvasElement;
+  moonPhaseTexture?: import("three").CanvasTexture;
 };
 
 type MoonOrbitLayer = {
@@ -84,6 +86,83 @@ const distanceToRadius = (distance: number) => {
     SCENE_RADIUS_MIN + progress * (SCENE_RADIUS_MAX - SCENE_RADIUS_MIN)
   );
 };
+
+function paintMoonPhase(canvas: HTMLCanvasElement, elongation: number) {
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  const size = canvas.width;
+  const center = size / 2;
+  const radius = size * 0.46;
+  const radians = (elongation * Math.PI) / 180;
+  const terminatorRadius = radius * Math.abs(Math.cos(radians));
+  const waxing = elongation <= 180;
+
+  context.clearRect(0, 0, size, size);
+  context.save();
+  context.beginPath();
+  context.arc(center, center, radius, 0, Math.PI * 2);
+  context.clip();
+
+  const dark = context.createRadialGradient(
+    center - radius * 0.2,
+    center - radius * 0.3,
+    radius * 0.06,
+    center,
+    center,
+    radius,
+  );
+  dark.addColorStop(0, "#303940");
+  dark.addColorStop(1, "#080b0f");
+  context.fillStyle = dark;
+  context.fillRect(0, 0, size, size);
+
+  context.beginPath();
+  context.arc(
+    center,
+    center,
+    radius,
+    -Math.PI / 2,
+    Math.PI / 2,
+    !waxing,
+  );
+  const terminatorOnRight = waxing ? elongation < 90 : elongation < 270;
+  context.ellipse(
+    center,
+    center,
+    terminatorRadius,
+    radius,
+    0,
+    Math.PI / 2,
+    (Math.PI * 3) / 2,
+    terminatorOnRight,
+  );
+  context.closePath();
+  context.clip();
+
+  const light = context.createRadialGradient(
+    center - radius * 0.22,
+    center - radius * 0.3,
+    radius * 0.04,
+    center,
+    center,
+    radius,
+  );
+  light.addColorStop(0, "#f3f7f5");
+  light.addColorStop(0.66, "#c8d0d0");
+  light.addColorStop(1, "#879294");
+  context.fillStyle = light;
+  context.fillRect(0, 0, size, size);
+  for (let index = 0; index < 52; index += 1) {
+    const x = center + Math.sin(index * 17.23) * radius * 0.78;
+    const y = center + Math.cos(index * 9.71) * radius * 0.78;
+    const craterRadius = 2 + ((index * 13) % 15);
+    context.fillStyle = "rgba(55, 65, 68, .22)";
+    context.beginPath();
+    context.ellipse(x, y, craterRadius, craterRadius * 0.72, 0, 0, Math.PI * 2);
+    context.fill();
+  }
+  context.restore();
+}
 
 export function ThreeSky({
   grahas,
@@ -1104,6 +1183,20 @@ export function ThreeSky({
           const isNode = graha.id === "rahu" || graha.id === "ketu";
           const bodySize = BODY_VISUAL_SIZE[graha.id] ?? 0.2;
           const bodyTexture = isNode ? null : surfaceTexture(graha.id);
+          const moonPhaseCanvas =
+            graha.id === "moon" ? document.createElement("canvas") : null;
+          if (moonPhaseCanvas) {
+            moonPhaseCanvas.width = 512;
+            moonPhaseCanvas.height = 512;
+          }
+          const moonPhaseTexture = moonPhaseCanvas
+            ? new THREE.CanvasTexture(moonPhaseCanvas)
+            : undefined;
+          if (moonPhaseTexture) {
+            moonPhaseTexture.colorSpace = THREE.SRGBColorSpace;
+            paintMoonPhase(moonPhaseCanvas!, 0);
+            moonPhaseTexture.needsUpdate = true;
+          }
           const material = new THREE.MeshStandardMaterial({
             color: 0xffffff,
             map: bodyTexture,
@@ -1138,6 +1231,20 @@ export function ThreeSky({
           );
           pickTarget.userData.grahaId = graha.id;
           group.add(pickTarget);
+
+          if (moonPhaseTexture) {
+            const phaseDisc = new THREE.Sprite(
+              new THREE.SpriteMaterial({
+                map: moonPhaseTexture,
+                transparent: true,
+                depthTest: false,
+                depthWrite: false,
+              }),
+            );
+            phaseDisc.scale.set(bodySize * 2.12, bodySize * 2.12, 1);
+            phaseDisc.renderOrder = 4;
+            group.add(phaseDisc);
+          }
 
           if (graha.id === "sun") {
             const glow = new THREE.Mesh(
@@ -1235,6 +1342,8 @@ export function ThreeSky({
             halo,
             latitudeGuide,
             moonMaterial: graha.id === "moon" ? material : undefined,
+            moonPhaseCanvas: moonPhaseCanvas ?? undefined,
+            moonPhaseTexture,
           });
         });
 
@@ -1405,6 +1514,10 @@ export function ThreeSky({
       node.halo.visible = active;
       node.label.visible = showLabels || active;
       if (graha.id === "moon" && node.moonMaterial && moonPhase) {
+        if (node.moonPhaseCanvas && node.moonPhaseTexture) {
+          paintMoonPhase(node.moonPhaseCanvas, moonPhase.elongation);
+          node.moonPhaseTexture.needsUpdate = true;
+        }
         const brightness = Math.max(0.015, moonPhase.illumination);
         node.moonMaterial.color.setRGB(brightness, brightness, brightness);
         node.moonMaterial.emissive.setRGB(0.68, 0.78, 0.96);
