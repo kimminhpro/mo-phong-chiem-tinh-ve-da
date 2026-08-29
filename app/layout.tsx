@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    "https://jyotish-orbit-vietnam.vongnhongjp.chatgpt.site",
-  ),
+  metadataBase: new URL("https://kimminhpro.github.io/mo-phong-chiem-tinh-ve-da/"),
   title: "Jyotish Orbit — Bầu trời Vệ Đà",
   description:
     "Bầu trời Jyotish 3D với Swiss Ephemeris, Lagna, 12 bhāva Whole Sign, lá số D1, 27 Nakshatra và 108 pāda.",

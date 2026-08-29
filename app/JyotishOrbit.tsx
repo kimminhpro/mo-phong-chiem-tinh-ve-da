@@ -289,9 +289,13 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
       const timeZone = params.get("tz");
       const name = params.get("place");
 
+      let restoredSharedDate = false;
       if (sharedDate) {
         const parsed = new Date(sharedDate);
-        if (!Number.isNaN(parsed.getTime())) setDate(parsed);
+        if (!Number.isNaN(parsed.getTime())) {
+          setDate(parsed);
+          restoredSharedDate = true;
+        }
       }
       if (
         Number.isFinite(latitude) &&
@@ -315,6 +319,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
           // Ignore invalid IANA zones from edited URLs.
         }
       }
+      if (!restoredSharedDate) setDate(new Date());
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
