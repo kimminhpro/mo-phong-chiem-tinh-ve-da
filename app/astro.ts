@@ -12,6 +12,15 @@ export type Graha = {
   speed: number;
 };
 
+export type MoonPhase = {
+  elongation: number;
+  illumination: number;
+  tithi: number;
+  paksha: "Shukla" | "Krishna";
+  tithiName: string;
+  phaseName: string;
+};
+
 export const RASHIS = [
   ["Mesha", "Bạch Dương", "♈︎"],
   ["Vrishabha", "Kim Ngưu", "♉︎"],
@@ -85,6 +94,58 @@ export const GRAHA_INFO = [
 ] as const;
 
 export const norm = (value: number) => ((value % 360) + 360) % 360;
+
+const TITHI_NAMES = [
+  "Pratipada",
+  "Dvitiya",
+  "Tritiya",
+  "Chaturthi",
+  "Panchami",
+  "Shashthi",
+  "Saptami",
+  "Ashtami",
+  "Navami",
+  "Dashami",
+  "Ekadashi",
+  "Dvadashi",
+  "Trayodashi",
+  "Chaturdashi",
+] as const;
+
+export function getMoonPhase(grahas: Graha[]): MoonPhase | null {
+  const sun = grahas.find((graha) => graha.id === "sun");
+  const moon = grahas.find((graha) => graha.id === "moon");
+  if (!sun || !moon) return null;
+
+  const elongation = norm(moon.tropical - sun.tropical);
+  const illumination = (1 - Math.cos((elongation * Math.PI) / 180)) / 2;
+  const tithi = Math.min(30, Math.floor(elongation / 12) + 1);
+  const paksha = tithi <= 15 ? "Shukla" : "Krishna";
+  const tithiName =
+    tithi === 15
+      ? "Purnima"
+      : tithi === 30
+        ? "Amavasya"
+        : TITHI_NAMES[(tithi - 1) % 15];
+  const phaseName =
+    illumination < 0.02
+      ? "Trăng non"
+      : illumination < 0.48
+        ? paksha === "Shukla"
+          ? "Trăng lưỡi liềm đầu tháng"
+          : "Trăng lưỡi liềm cuối tháng"
+        : illumination < 0.52
+          ? paksha === "Shukla"
+            ? "Thượng huyền"
+            : "Hạ huyền"
+          : illumination < 0.98
+            ? paksha === "Shukla"
+              ? "Trăng khuyết dần sáng"
+              : "Trăng khuyết dần tối"
+            : "Trăng tròn";
+
+  return { elongation, illumination, tithi, paksha, tithiName, phaseName };
+}
 
 export function formatDegree(longitude: number) {
   const within = norm(longitude) % 30;

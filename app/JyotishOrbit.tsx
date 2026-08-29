@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   formatDegree,
+  getMoonPhase,
   getNakshatra,
   NAKSHATRAS,
   RASHIS,
@@ -254,6 +255,24 @@ function PositionList({
           );
         })}
       </div>
+    </section>
+  );
+}
+
+function MoonPhaseCard({ grahas }: { grahas: Graha[] }) {
+  const phase = getMoonPhase(grahas);
+  if (!phase) return null;
+  return (
+    <section className="moon-phase" aria-labelledby="moon-phase-title">
+      <div>
+        <p>Panchanga · Tithi</p>
+        <h2 id="moon-phase-title">Pha Mặt Trăng</h2>
+      </div>
+      <strong>{Math.round(phase.illumination * 100)}%</strong>
+      <p>
+        {phase.paksha} {phase.tithiName} · Tithi {phase.tithi}
+      </p>
+      <small>{phase.phaseName} · góc Mặt Trời–Mặt Trăng {phase.elongation.toFixed(1)}°</small>
     </section>
   );
 }
@@ -590,6 +609,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
             locationStatus={locationStatus}
             shareStatus={shareStatus}
           />
+          <MoonPhaseCard grahas={grahas} />
           <D1Chart
             grahas={grahas}
             lagnaLongitude={lagnaLongitude}

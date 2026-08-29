@@ -620,6 +620,20 @@ main { min-height: 100vh; padding-bottom: 102px; position: relative; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.moon-phase {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(174, 200, 232, 0.28);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(27, 54, 84, 0.82), rgba(9, 24, 39, 0.92));
+}
+.moon-phase > div { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.moon-phase p { margin: 0; color: var(--muted); font-size: 12px; }
+.moon-phase h2 { margin: 3px 0 0; font-size: 17px; }
+.moon-phase > strong { float: right; margin-top: -38px; color: #e2efff; font-size: 22px; }
+.moon-phase > p { clear: both; padding-top: 12px; color: var(--ivory); font-weight: 700; }
+.moon-phase small { display: block; margin-top: 5px; color: var(--muted); }
 .selection-loading {
   min-height: 48px;
   display: grid;

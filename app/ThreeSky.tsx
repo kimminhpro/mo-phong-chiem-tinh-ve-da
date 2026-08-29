@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   getNakshatra,
+  getMoonPhase,
   NAKSHATRAS,
   RASHIS,
   ROMAN_HOUSES,
@@ -26,6 +27,12 @@ type PlanetNode = {
   label: import("three").Sprite;
   halo: import("three").Mesh;
   latitudeGuide: import("three").Line;
+  moonMaterial?: import("three").MeshStandardMaterial;
+};
+
+type MoonOrbitLayer = {
+  orbit: import("three").LineLoop;
+  segments: number;
 };
 
 type CoordinateLayers = {
@@ -91,6 +98,7 @@ export function ThreeSky({
   const planetNodesRef = useRef(new Map<string, PlanetNode>());
   const nakshatraGroupRef = useRef<import("three").Group | null>(null);
   const coordinateLayersRef = useRef<CoordinateLayers | null>(null);
+  const moonOrbitRef = useRef<MoonOrbitLayer | null>(null);
   const onSelectRef = useRef(onSelect);
   const onUnavailableRef = useRef(onUnavailable);
   const [ready, setReady] = useState(false);
@@ -1004,6 +1012,29 @@ export function ThreeSky({
         earthWire.position.copy(earth.position);
         ecliptic.add(earthWire);
 
+        const moonOrbitSegments = 160;
+        const moonOrbitGeometry = new THREE.BufferGeometry();
+        moonOrbitGeometry.setAttribute(
+          "position",
+          new THREE.BufferAttribute(new Float32Array(moonOrbitSegments * 3), 3),
+        );
+        const moonOrbit = new THREE.LineLoop(
+          moonOrbitGeometry,
+          new THREE.LineDashedMaterial({
+            color: 0xaec8e8,
+            dashSize: 0.13,
+            gapSize: 0.09,
+            transparent: true,
+            opacity: 0.6,
+            depthWrite: false,
+          }),
+        );
+        moonOrbit.position.y = 0.025;
+        moonOrbit.visible = false;
+        moonOrbit.renderOrder = 2;
+        ecliptic.add(moonOrbit);
+        moonOrbitRef.current = { orbit: moonOrbit, segments: moonOrbitSegments };
+
         const createLabel = (text: string, color: string) => {
           const canvas = document.createElement("canvas");
           canvas.width = 512;
@@ -1073,6 +1104,24 @@ export function ThreeSky({
           const isNode = graha.id === "rahu" || graha.id === "ketu";
           const bodySize = BODY_VISUAL_SIZE[graha.id] ?? 0.2;
           const bodyTexture = isNode ? null : surfaceTexture(graha.id);
+          const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            map: bodyTexture,
+            bumpMap: bodyTexture,
+            bumpScale:
+              graha.id === "moon" || graha.id === "mercury"
+                ? 0.045
+                : 0.015,
+            emissive:
+              graha.id === "sun"
+                ? new THREE.Color(0xff7a12)
+                : new THREE.Color(0x050708),
+            ...(graha.id === "sun" ? { emissiveMap: bodyTexture } : {}),
+            emissiveIntensity: graha.id === "sun" ? 0.88 : 0.06,
+            roughness:
+              graha.id === "jupiter" || graha.id === "venus" ? 0.7 : 0.82,
+            metalness: 0.02,
+          });
           const pickTarget = new THREE.Mesh(
             new THREE.SphereGeometry(
               isNode ? 0.21 : bodySize,
@@ -1085,28 +1134,7 @@ export function ThreeSky({
                   opacity: 0,
                   depthWrite: false,
                 })
-              : new THREE.MeshStandardMaterial({
-                  color: 0xffffff,
-                  map: bodyTexture,
-                  bumpMap: bodyTexture,
-                  bumpScale:
-                    graha.id === "moon" || graha.id === "mercury"
-                      ? 0.045
-                      : 0.015,
-                  emissive:
-                    graha.id === "sun"
-                      ? new THREE.Color(0xff7a12)
-                      : new THREE.Color(0x050708),
-                  ...(graha.id === "sun"
-                    ? { emissiveMap: bodyTexture }
-                    : {}),
-                  emissiveIntensity: graha.id === "sun" ? 0.88 : 0.06,
-                  roughness:
-                    graha.id === "jupiter" || graha.id === "venus"
-                      ? 0.7
-                      : 0.82,
-                  metalness: 0.02,
-                }),
+              : material,
           );
           pickTarget.userData.grahaId = graha.id;
           group.add(pickTarget);
@@ -1206,6 +1234,7 @@ export function ThreeSky({
             label,
             halo,
             latitudeGuide,
+            moonMaterial: graha.id === "moon" ? material : undefined,
           });
         });
 
@@ -1328,12 +1357,29 @@ export function ThreeSky({
       planetNodes.clear();
       nakshatraGroupRef.current = null;
       coordinateLayersRef.current = null;
+      moonOrbitRef.current = null;
     };
     // The scene owns stable Graha objects; later ephemeris updates only move them.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
+    const moonPhase = getMoonPhase(grahas);
+    const moonOrbitLayer = moonOrbitRef.current;
+    const moon = grahas.find((graha) => graha.id === "moon");
+    if (moonOrbitLayer && moon) {
+      const radius = distanceToRadius(moon.distance);
+      const positions = moonOrbitLayer.orbit.geometry.getAttribute(
+        "position",
+      ) as import("three").BufferAttribute;
+      for (let index = 0; index < moonOrbitLayer.segments; index += 1) {
+        const angle = (index / moonOrbitLayer.segments) * Math.PI * 2;
+        positions.setXYZ(index, Math.sin(angle) * radius, 0, -Math.cos(angle) * radius);
+      }
+      positions.needsUpdate = true;
+      moonOrbitLayer.orbit.computeLineDistances();
+      moonOrbitLayer.orbit.visible = true;
+    }
     grahas.forEach((graha) => {
       const node = planetNodesRef.current.get(graha.id);
       if (!node) return;
@@ -1358,6 +1404,10 @@ export function ThreeSky({
       node.marker.scale.setScalar(baseScale * (active ? 1.6 : 1));
       node.halo.visible = active;
       node.label.visible = showLabels || active;
+      if (graha.id === "moon" && node.moonMaterial && moonPhase) {
+        node.moonMaterial.emissive.setRGB(0.68, 0.78, 0.96);
+        node.moonMaterial.emissiveIntensity = moonPhase.illumination * 0.95;
+      }
     });
     if (nakshatraGroupRef.current) {
       nakshatraGroupRef.current.visible = showNakshatras;
