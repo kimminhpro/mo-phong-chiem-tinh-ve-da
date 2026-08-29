@@ -634,6 +634,23 @@ main { min-height: 100vh; padding-bottom: 102px; position: relative; }
 .moon-phase > strong { float: right; margin-top: -38px; color: #e2efff; font-size: 22px; }
 .moon-phase > p { clear: both; padding-top: 12px; color: var(--ivory); font-weight: 700; }
 .moon-phase small { display: block; margin-top: 5px; color: var(--muted); }
+.eclipse-phase {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(164, 112, 176, 0.34);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(49, 23, 57, 0.78), rgba(10, 20, 38, 0.94));
+}
+.eclipse-phase.solar { border-color: rgba(238, 169, 73, 0.7); }
+.eclipse-phase.lunar { border-color: rgba(196, 116, 184, 0.7); }
+.eclipse-phase > div { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.eclipse-phase p { margin: 0; color: var(--muted); font-size: 12px; }
+.eclipse-phase h2 { margin: 3px 0 0; font-size: 17px; }
+.eclipse-phase > strong { float: right; margin-top: -34px; color: #efe2ff; font-size: 13px; }
+.eclipse-phase.solar > strong { color: #ffd88b; }
+.eclipse-phase.lunar > strong { color: #ebb6e4; }
+.eclipse-phase > p { clear: both; padding-top: 12px; color: var(--ivory); font-weight: 700; }
+.eclipse-phase small { display: block; margin-top: 5px; color: var(--muted); }
 .selection-loading {
   min-height: 48px;
   display: grid;

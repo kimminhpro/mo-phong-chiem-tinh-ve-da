@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   formatDegree,
+  getEclipseState,
   getMoonPhase,
   getNakshatra,
   NAKSHATRAS,
@@ -279,6 +280,30 @@ function MoonPhaseCard({ grahas }: { grahas: Graha[] }) {
         {phase.paksha} {phase.tithiName} · Tithi {phase.tithi}
       </p>
       <small>{phase.phaseName} · góc Mặt Trời–Mặt Trăng {phase.elongation.toFixed(1)}°</small>
+    </section>
+  );
+}
+
+function EclipseCard({ grahas }: { grahas: Graha[] }) {
+  const eclipse = getEclipseState(grahas);
+  if (!eclipse) return null;
+  const title =
+    eclipse.kind === "solar"
+      ? "Nhật thực"
+      : eclipse.kind === "lunar"
+        ? "Nguyệt thực"
+        : "Nhật thực · nguyệt thực";
+  return (
+    <section className={`eclipse-phase ${eclipse.kind ?? "idle"}`} aria-live="polite">
+      <div>
+        <p>Syzygy · Rahu / Ketu</p>
+        <h2>{title}</h2>
+      </div>
+      <strong>{eclipse.kind ? "Đang mô phỏng" : "Chưa hội đủ"}</strong>
+      <p>{eclipse.description}</p>
+      <small>
+        Lệch Sóc/Vọng {eclipse.syzygyDistance.toFixed(1)}° · cách nút {eclipse.nodeDistance.toFixed(1)}°
+      </small>
     </section>
   );
 }
@@ -618,6 +643,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
             shareStatus={shareStatus}
           />
           <MoonPhaseCard grahas={grahas} />
+          <EclipseCard grahas={grahas} />
           <D1Chart
             grahas={grahas}
             lagnaLongitude={lagnaLongitude}
