@@ -192,7 +192,7 @@ export function getEclipseState(grahas: Graha[]): EclipseState | null {
     kind: null,
     syzygyDistance: Math.min(solarDistance, lunarDistance),
     nodeDistance,
-    description: "Không ở cửa sổ thực: Moon cần gần Sóc/Vọng và gần Rahu hoặc Ketu.",
+    description: "Không ở cửa sổ thực: Moon cần gần New Moon/Full Moon và gần Rahu hoặc Ketu.",
   };
 }
 

@@ -302,7 +302,7 @@ function EclipseCard({ grahas }: { grahas: Graha[] }) {
       <strong>{eclipse.kind ? "Đang mô phỏng" : "Chưa hội đủ"}</strong>
       <p>{eclipse.description}</p>
       <small>
-        Lệch Sóc/Vọng {eclipse.syzygyDistance.toFixed(1)}° · cách nút {eclipse.nodeDistance.toFixed(1)}°
+        Lệch New Moon/Full Moon {eclipse.syzygyDistance.toFixed(1)}° · cách nút {eclipse.nodeDistance.toFixed(1)}°
       </small>
     </section>
   );
