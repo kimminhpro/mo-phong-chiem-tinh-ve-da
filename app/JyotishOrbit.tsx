@@ -49,6 +49,8 @@ function ZodiacWheel({
   showNakshatras: boolean;
   onSelect: (id: string) => void;
 }) {
+  const moonPhase = getMoonPhase(grahas);
+
   return (
     <div className="wheel-wrap" aria-label="Bản đồ 12 cung hoàng đạo">
       <div className="wheel">
@@ -168,6 +170,10 @@ function ZodiacWheel({
                   "--planet-color": graha.color,
                   left: `${left}%`,
                   top: `${top}%`,
+                  opacity:
+                    graha.id === "moon"
+                      ? 0.16 + (moonPhase?.illumination ?? 1) * 0.84
+                      : 1,
                 } as React.CSSProperties
               }
             >

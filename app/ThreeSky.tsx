@@ -1405,6 +1405,8 @@ export function ThreeSky({
       node.halo.visible = active;
       node.label.visible = showLabels || active;
       if (graha.id === "moon" && node.moonMaterial && moonPhase) {
+        const brightness = Math.max(0.015, moonPhase.illumination);
+        node.moonMaterial.color.setRGB(brightness, brightness, brightness);
         node.moonMaterial.emissive.setRGB(0.68, 0.78, 0.96);
         node.moonMaterial.emissiveIntensity = moonPhase.illumination * 0.95;
       }
