@@ -651,6 +651,33 @@ main { min-height: 100vh; padding-bottom: 102px; position: relative; }
 .eclipse-phase.lunar > strong { color: #ebb6e4; }
 .eclipse-phase > p { clear: both; padding-top: 12px; color: var(--ivory); font-weight: 700; }
 .eclipse-phase small { display: block; margin-top: 5px; color: var(--muted); }
+.local-eclipses {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(110, 182, 170, 0.36);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(16, 53, 59, 0.72), rgba(8, 20, 33, 0.94));
+}
+.local-eclipses > div { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.local-eclipses > div p,
+.local-eclipses > small { color: var(--muted); font-size: 12px; }
+.local-eclipses > div p { margin: 0; }
+.local-eclipses h2 { margin: 3px 0 0; font-size: 17px; }
+.local-eclipses > small { display: block; margin-top: 9px; }
+.eclipse-status { margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+.local-eclipse {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-left: 3px solid #e2b86d;
+  border-radius: 6px;
+  background: rgba(4, 15, 23, 0.42);
+}
+.local-eclipse.lunar { border-left-color: #d792c9; }
+.local-eclipse strong { color: var(--ivory); font-size: 13px; }
+.local-eclipse p { margin: 6px 0 2px; color: var(--muted); font-size: 12px; }
+.local-eclipse > small { color: #a8c7c4; font-size: 11px; }
+.local-eclipse ul { margin: 8px 0 0; padding-left: 17px; color: #c7d5d8; font-size: 11px; }
+.local-eclipse li + li { margin-top: 3px; }
 .selection-loading {
   min-height: 48px;
   display: grid;

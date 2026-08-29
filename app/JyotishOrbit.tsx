@@ -14,6 +14,7 @@ import { calculateSwissGrahas } from "./swiss";
 import { ThreeSky } from "./ThreeSky";
 import { D1Chart } from "./D1Chart";
 import { ObserverPanel } from "./ObserverPanel";
+import { findLocalEclipses, type LocalEclipse } from "./local-eclipse";
 import {
   DEFAULT_OBSERVER,
   formatDateTimeInput,
@@ -304,6 +305,71 @@ function EclipseCard({ grahas }: { grahas: Graha[] }) {
       <small>
         Lệch New Moon/Full Moon {eclipse.syzygyDistance.toFixed(1)}° · cách nút {eclipse.nodeDistance.toFixed(1)}°
       </small>
+    </section>
+  );
+}
+
+const formatLocalEclipseTime = (iso: string, timeZone: string) =>
+  new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone,
+  }).format(new Date(iso));
+
+function LocalEclipseCard({
+  julianDay,
+  observer,
+}: {
+  julianDay: number | null;
+  observer: ObserverLocation;
+}) {
+  const [events, setEvents] = useState<LocalEclipse[]>([]);
+  const [status, setStatus] = useState("Đang chuẩn bị phép tính địa phương…");
+
+  useEffect(() => {
+    if (!julianDay) return;
+    let cancelled = false;
+    findLocalEclipses(julianDay, observer.latitude, observer.longitude)
+      .then((result) => {
+        if (cancelled) return;
+        setEvents(result);
+        setStatus("");
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("Không thể hoàn tất phép tính thực địa phương.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [julianDay, observer.latitude, observer.longitude]);
+
+  return (
+    <section className="local-eclipses" aria-labelledby="local-eclipses-title">
+      <div>
+        <p>Swiss Ephemeris · địa điểm quan sát</p>
+        <h2 id="local-eclipses-title">Thực tại {observer.name}</h2>
+      </div>
+      <small>Giả định cao độ 0 m · múi giờ {observer.timeZone}</small>
+      {status && <p className="eclipse-status">{status}</p>}
+      {!status && events.length === 0 && (
+        <p className="eclipse-status">Không có hiện tượng thực nhìn thấy tại địa điểm này trong lần tìm kế tiếp.</p>
+      )}
+      {events.map((event) => (
+        <article className={`local-eclipse ${event.kind}`} key={event.kind}>
+          <strong>{event.kind === "solar" ? "Nhật thực" : "Nguyệt thực"} · {event.type}</strong>
+          <p>Cực đại: {formatLocalEclipseTime(event.maximum, observer.timeZone)}</p>
+          {event.magnitude !== null && <small>Độ lớn: {event.magnitude.toFixed(3)}</small>}
+          {event.contacts.length > 0 && (
+            <ul>
+              {event.contacts.map((contact) => (
+                <li key={`${contact.label}-${contact.at}`}>
+                  {contact.label}: {formatLocalEclipseTime(contact.at, observer.timeZone)}
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))}
     </section>
   );
 }
@@ -644,6 +710,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
           />
           <MoonPhaseCard grahas={grahas} />
           <EclipseCard grahas={grahas} />
+          <LocalEclipseCard julianDay={julianDay} observer={observer} />
           <D1Chart
             grahas={grahas}
             lagnaLongitude={lagnaLongitude}
