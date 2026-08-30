@@ -6,76 +6,14 @@ export type ObserverLocation = {
   timeZone: string;
 };
 
-export const OBSERVER_LOCATIONS: ObserverLocation[] = [
-  {
-    id: "ho-chi-minh",
-    name: "TP. Hồ Chí Minh",
-    latitude: 10.8231,
-    longitude: 106.6297,
-    timeZone: "Asia/Ho_Chi_Minh",
-  },
-  {
-    id: "ha-noi",
-    name: "Hà Nội",
-    latitude: 21.0285,
-    longitude: 105.8542,
-    timeZone: "Asia/Ho_Chi_Minh",
-  },
-  {
-    id: "da-nang",
-    name: "Đà Nẵng",
-    latitude: 16.0544,
-    longitude: 108.2022,
-    timeZone: "Asia/Ho_Chi_Minh",
-  },
-  {
-    id: "tokyo",
-    name: "Tokyo",
-    latitude: 35.6762,
-    longitude: 139.6503,
-    timeZone: "Asia/Tokyo",
-  },
-  {
-    id: "new-delhi",
-    name: "New Delhi",
-    latitude: 28.6139,
-    longitude: 77.209,
-    timeZone: "Asia/Kolkata",
-  },
-  {
-    id: "london",
-    name: "London",
-    latitude: 51.5072,
-    longitude: -0.1276,
-    timeZone: "Europe/London",
-  },
-  {
-    id: "new-york",
-    name: "New York",
-    latitude: 40.7128,
-    longitude: -74.006,
-    timeZone: "America/New_York",
-  },
-];
-
-export const DEFAULT_OBSERVER = OBSERVER_LOCATIONS[0];
-
-export const TIME_ZONES = [
-  "Asia/Ho_Chi_Minh",
-  "Asia/Tokyo",
-  "Asia/Kolkata",
-  "Asia/Bangkok",
-  "Asia/Singapore",
-  "Asia/Hong_Kong",
-  "Australia/Sydney",
-  "Europe/London",
-  "Europe/Paris",
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "UTC",
-] as const;
+// Used only while the browser location permission is pending or unavailable.
+export const DEFAULT_OBSERVER: ObserverLocation = {
+  id: "fallback",
+  name: "Vị trí mặc định",
+  latitude: 10.8231,
+  longitude: 106.6297,
+  timeZone: "Asia/Ho_Chi_Minh",
+};
 
 const dateTimeParts = (date: Date, timeZone: string) => {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -156,10 +94,4 @@ export function formatUtcOffset(date: Date, timeZone: string) {
   const hours = Math.floor(absolute / 60);
   const minutes = absolute % 60;
   return `UTC${sign}${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-}
-
-export function formatCoordinates(latitude: number, longitude: number) {
-  const lat = `${Math.abs(latitude).toFixed(4)}°${latitude >= 0 ? "B" : "N"}`;
-  const lon = `${Math.abs(longitude).toFixed(4)}°${longitude >= 0 ? "Đ" : "T"}`;
-  return `${lat} · ${lon}`;
 }

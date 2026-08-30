@@ -12,7 +12,6 @@ import {
 import { calculateSwissGrahas } from "./swiss";
 import { ThreeSky } from "./ThreeSky";
 import { D1Chart } from "./D1Chart";
-import { ObserverPanel } from "./ObserverPanel";
 import {
   DEFAULT_OBSERVER,
   formatDateTimeInput,
@@ -140,13 +139,12 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
   const [mcLongitude, setMcLongitude] = useState(0);
   const [julianDay, setJulianDay] = useState<number | null>(null);
   const [engineVersion, setEngineVersion] = useState("");
-  const [locationStatus, setLocationStatus] = useState("");
-  const [shareStatus, setShareStatus] = useState("");
   const [engineStatus, setEngineStatus] = useState<
     "loading" | "ready" | "error"
   >("loading");
 
   useEffect(() => {
+    let cancelled = false;
     const timer = window.setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
       const sharedDate = params.get("t");
@@ -163,6 +161,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
           restoredSharedDate = true;
         }
       }
+      let restoredSharedObserver = false;
       if (
         Number.isFinite(latitude) &&
         latitude >= -90 &&
@@ -181,13 +180,37 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
             longitude,
             timeZone,
           });
+          restoredSharedObserver = true;
         } catch {
           // Ignore invalid IANA zones from edited URLs.
         }
       }
       if (!restoredSharedDate) setDate(new Date());
+      if (!restoredSharedObserver && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => {
+            if (cancelled) return;
+            setObserver({
+              id: "device",
+              name: "Vị trí thiết bị",
+              latitude: Math.round(coords.latitude * 10000) / 10000,
+              longitude: Math.round(coords.longitude * 10000) / 10000,
+              timeZone:
+                Intl.DateTimeFormat().resolvedOptions().timeZone ||
+                DEFAULT_OBSERVER.timeZone,
+            });
+          },
+          () => {
+            // Keep the fallback location when permission is denied or unavailable.
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
+        );
+      }
     }, 0);
-    return () => window.clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -234,51 +257,6 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
 
   const shiftDays = (days: number) =>
     setDate((current) => new Date(current.getTime() + days * 86400000));
-
-  const useCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus("Trình duyệt này không hỗ trợ định vị.");
-      return;
-    }
-    setLocationStatus("Đang xác định vị trí…");
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        setObserver({
-          id: "current",
-          name: "Vị trí hiện tại",
-          latitude: Math.round(coords.latitude * 10000) / 10000,
-          longitude: Math.round(coords.longitude * 10000) / 10000,
-          timeZone:
-            Intl.DateTimeFormat().resolvedOptions().timeZone ||
-            observer.timeZone,
-        });
-        setLocationStatus("Đã cập nhật vị trí và múi giờ của thiết bị.");
-      },
-      () => {
-        setLocationStatus(
-          "Không thể đọc vị trí. Anh có thể nhập tọa độ thủ công.",
-        );
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
-    );
-  };
-
-  const shareCurrentView = async () => {
-    const url = new URL(window.location.href);
-    url.search = "";
-    url.searchParams.set("t", date.toISOString());
-    url.searchParams.set("lat", String(observer.latitude));
-    url.searchParams.set("lon", String(observer.longitude));
-    url.searchParams.set("tz", observer.timeZone);
-    url.searchParams.set("place", observer.name);
-    try {
-      await navigator.clipboard.writeText(url.toString());
-      setShareStatus("Đã sao chép liên kết thời gian và địa điểm.");
-    } catch {
-      window.history.replaceState({}, "", url);
-      setShareStatus("Liên kết đã được đặt trên thanh địa chỉ.");
-    }
-  };
 
   return (
     <main className={showLabels ? "" : "labels-hidden"}>
@@ -445,18 +423,6 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
         </section>
 
         <aside>
-          <ObserverPanel
-            date={date}
-            observer={observer}
-            onChange={(next) => {
-              setObserver(next);
-              setLocationStatus("");
-            }}
-            onUseCurrentLocation={useCurrentLocation}
-            onShare={shareCurrentView}
-            locationStatus={locationStatus}
-            shareStatus={shareStatus}
-          />
           <MoonPhaseCard grahas={grahas} />
           <PositionList
             grahas={grahas}
