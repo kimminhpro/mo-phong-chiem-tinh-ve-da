@@ -11,7 +11,6 @@
 - Lagna, 12 bhāva Whole Sign, lá số D1 kiểu Nam Ấn, 27 Nakshatra và 108 pāda.
 - Chọn thành phố, nhập tọa độ/múi giờ, dùng vị trí thiết bị và chia sẻ liên kết đang xem.
 - Điều khiển thời gian và mô phỏng chuyển động hành tinh.
-- Tìm nhật thực và nguyệt thực **tại địa điểm đang chọn**: loại thực, thời điểm cực đại và các mốc tiếp xúc theo múi giờ địa phương. Phép tính giả định cao độ 0 m.
 
 Không có máy chủ, cơ sở dữ liệu hoặc tài khoản người dùng. Dữ liệu vị trí và thời điểm chỉ được dùng cục bộ trong trình duyệt.
 
@@ -50,10 +49,9 @@ Quy trình nằm tại `.github/workflows/deploy-pages.yml`. Repository phải b
 - `app/JyotishOrbit.tsx`: trạng thái ứng dụng, điều khiển thời gian và UI.
 - `app/ThreeSky.tsx`: cảnh bầu trời 3D.
 - `app/swiss.ts`: nạp Swiss Ephemeris và tính vị trí các graha.
-- `app/local-eclipse.ts`: phép tính nhật/nguyệt thực địa phương bằng Swiss Ephemeris WebAssembly.
 - `app/observer.ts`: địa điểm, múi giờ và định dạng thời gian.
 - `public/`: WebAssembly và dữ liệu ephemeris được phục vụ cùng ứng dụng.
 
 ## Ghi chú giấy phép
 
-Swiss Ephemeris được phân phối theo AGPL-3.0. Thành phần `swisseph-wasm` dùng GPL-3.0-or-later. Hãy tuân thủ các điều khoản giấy phép tương ứng khi tái phân phối hoặc tích hợp ứng dụng vào một sản phẩm khác.
+Swiss Ephemeris được phân phối theo AGPL-3.0. Hãy xem giấy phép của `@swisseph/browser` và Swiss Ephemeris trước khi tái phân phối hoặc tích hợp ứng dụng vào một sản phẩm khác.

@@ -16,7 +16,6 @@
     "next": "^16.3.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "swisseph-wasm": "^0.1.0",
     "three": "^0.185.1"
   },
   "devDependencies": {
