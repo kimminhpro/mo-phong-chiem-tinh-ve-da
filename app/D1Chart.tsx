@@ -45,14 +45,7 @@ export function D1Chart({
   const lagnaSign = Math.floor(lagnaLongitude / 30);
 
   return (
-    <section className="d1-panel" aria-labelledby="d1-title">
-      <div className="panel-heading">
-        <div>
-          <p>Lá số Rāśi</p>
-          <h2 id="d1-title">D1 · Nam Ấn</h2>
-        </div>
-        <span className="whole-sign-badge">Whole Sign</span>
-      </div>
+    <section className="d1-panel d1-main-chart" aria-label="South Indian Chart D1">
       <div className="d1-chart" aria-label="Lá số D1 Whole Sign">
         {RASHIS.map(([sanskrit, vietnamese, symbol], signIndex) => {
           const [row, column] = SOUTH_INDIAN_POSITIONS[signIndex];
@@ -99,9 +92,6 @@ export function D1Chart({
           <small>Lahiri</small>
         </div>
       </div>
-      <p className="d1-note">
-        Mỗi rāśi là một bhāva trọn vẹn; H1 bắt đầu tại cung chứa Lagna.
-      </p>
     </section>
   );
 }

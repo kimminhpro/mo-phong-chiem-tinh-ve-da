@@ -422,16 +422,13 @@ aside { padding: 26px 24px 20px; }
   border-radius: 9px;
   background: rgba(7, 27, 35, 0.58);
 }
-.observer-panel .panel-heading,
-.d1-panel .panel-heading {
+.observer-panel .panel-heading {
   padding-bottom: 12px;
 }
-.observer-panel .panel-heading h2,
-.d1-panel .panel-heading h2 {
+.observer-panel .panel-heading h2 {
   font-size: 19px;
 }
-.observer-offset,
-.whole-sign-badge {
+.observer-offset {
   padding: 5px 7px;
   border: 1px solid rgba(101, 212, 199, 0.28);
   border-radius: 999px;
@@ -602,20 +599,15 @@ aside { padding: 26px 24px 20px; }
   color: var(--muted);
   font-size: 8px;
 }
-.d1-note {
-  margin: 10px 0 0;
-  color: #789094;
-  font-size: 8px;
-  line-height: 1.45;
-}
 .sky > .d1-panel {
-  width: min(100%, 860px);
+  width: min(100%, 720px);
   margin: 18px auto 8px;
-  padding: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: linear-gradient(145deg, rgba(7, 31, 41, .92), rgba(5, 18, 27, .9));
 }
-.sky > .d1-panel .panel-heading h2 { font-size: 25px; }
-.sky > .d1-panel .d1-chart { aspect-ratio: 1.35; }
+.sky > .d1-panel .d1-chart { aspect-ratio: 1; }
 .sky > .d1-panel .d1-sign { padding: 9px; }
 .sky > .d1-panel .d1-sign-head { font-size: 9px; }
 .sky > .d1-panel .d1-sign-head b { font-size: 8px; }
@@ -623,7 +615,6 @@ aside { padding: 26px 24px 20px; }
 .sky > .d1-panel .d1-grahas button { min-width: 28px; min-height: 25px; font-size: 9px; }
 .sky > .d1-panel .d1-center span { font-size: 36px; }
 .sky > .d1-panel .d1-center strong { font-size: 10px; }
-.sky > .d1-panel .d1-note { font-size: 9px; }
 .positions { min-width: 0; }
 .panel-heading { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
 .panel-heading h2 { color: var(--gold); font-size: 24px; }
@@ -853,7 +844,7 @@ aside { padding: 26px 24px 20px; }
   .reset-view { min-height: 42px; }
   .coordinate-key, .coordinate-caveat { display: none; }
   .coordinate-state { display: grid; }
-  .sky > .d1-panel { margin-top: 14px; padding: 12px; }
+  .sky > .d1-panel { width: min(100%, 580px); margin-top: 14px; }
   .sky > .d1-panel .d1-chart { aspect-ratio: 1; }
   .sky > .d1-panel .d1-sign { padding: 5px; }
   .sky > .d1-panel .d1-sign-head { font-size: 7px; }
