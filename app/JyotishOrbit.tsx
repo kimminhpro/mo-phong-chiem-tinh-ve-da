@@ -346,7 +346,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
                   onClick={() => setViewMode("d1")}
                   aria-pressed={viewMode === "d1"}
                 >
-                  Lá số Rāśi D1
+                  South Indian Chart
                 </button>
               </div>
               <button
