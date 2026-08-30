@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  getEclipseState,
   getNakshatra,
   getMoonPhase,
   NAKSHATRAS,
@@ -36,12 +35,6 @@ type PlanetNode = {
 type MoonOrbitLayer = {
   orbit: import("three").LineLoop;
   segments: number;
-};
-
-type EclipseLayer = {
-  solarShadow: import("three").Mesh;
-  lunarShadow: import("three").Mesh;
-  upAxis: import("three").Vector3;
 };
 
 type CoordinateLayers = {
@@ -186,7 +179,6 @@ export function ThreeSky({
   const nakshatraGroupRef = useRef<import("three").Group | null>(null);
   const coordinateLayersRef = useRef<CoordinateLayers | null>(null);
   const moonOrbitRef = useRef<MoonOrbitLayer | null>(null);
-  const eclipseLayerRef = useRef<EclipseLayer | null>(null);
   const onSelectRef = useRef(onSelect);
   const onUnavailableRef = useRef(onUnavailable);
   const [ready, setReady] = useState(false);
@@ -1100,38 +1092,6 @@ export function ThreeSky({
         earthWire.position.copy(earth.position);
         ecliptic.add(earthWire);
 
-        const solarShadow = new THREE.Mesh(
-          new THREE.ConeGeometry(0.34, 1, 36, 1, true),
-          new THREE.MeshBasicMaterial({
-            color: 0x172335,
-            transparent: true,
-            opacity: 0.58,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          }),
-        );
-        solarShadow.visible = false;
-        solarShadow.renderOrder = 3;
-        ecliptic.add(solarShadow);
-        const lunarShadow = new THREE.Mesh(
-          new THREE.ConeGeometry(0.58, 1, 36, 1, true),
-          new THREE.MeshBasicMaterial({
-            color: 0x44214f,
-            transparent: true,
-            opacity: 0.42,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          }),
-        );
-        lunarShadow.visible = false;
-        lunarShadow.renderOrder = 3;
-        ecliptic.add(lunarShadow);
-        eclipseLayerRef.current = {
-          solarShadow,
-          lunarShadow,
-          upAxis: new THREE.Vector3(0, 1, 0),
-        };
-
         const moonOrbitSegments = 160;
         const moonOrbitGeometry = new THREE.BufferGeometry();
         moonOrbitGeometry.setAttribute(
@@ -1507,7 +1467,6 @@ export function ThreeSky({
       nakshatraGroupRef.current = null;
       coordinateLayersRef.current = null;
       moonOrbitRef.current = null;
-      eclipseLayerRef.current = null;
     };
     // The scene owns stable Graha objects; later ephemeris updates only move them.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1515,7 +1474,6 @@ export function ThreeSky({
 
   useEffect(() => {
     const moonPhase = getMoonPhase(grahas);
-    const eclipse = getEclipseState(grahas);
     const moonOrbitLayer = moonOrbitRef.current;
     const moon = grahas.find((graha) => graha.id === "moon");
     const rahu = grahas.find((graha) => graha.id === "rahu");
@@ -1581,44 +1539,6 @@ export function ThreeSky({
         node.moonMaterial.emissiveIntensity = moonPhase.illumination * 0.95;
       }
     });
-    const eclipseLayer = eclipseLayerRef.current;
-    if (eclipseLayer) {
-      eclipseLayer.solarShadow.visible = false;
-      eclipseLayer.lunarShadow.visible = false;
-      const moonNode = planetNodesRef.current.get("moon");
-      const sunNode = planetNodesRef.current.get("sun");
-      const earthCenter = moonNode?.group.position.clone() ?? sunNode?.group.position.clone();
-      earthCenter?.set(0, 0.18, 0);
-      if (eclipse?.kind === "solar" && moonNode && earthCenter) {
-        const direction = earthCenter
-          .clone()
-          .sub(moonNode.group.position)
-          .normalize();
-        const length = moonNode.group.position.distanceTo(earthCenter);
-        eclipseLayer.solarShadow.position
-          .copy(moonNode.group.position)
-          .addScaledVector(direction, length / 2);
-        eclipseLayer.solarShadow.quaternion.setFromUnitVectors(
-          eclipseLayer.upAxis,
-          direction,
-        );
-        eclipseLayer.solarShadow.scale.set(1, length, 1);
-        eclipseLayer.solarShadow.visible = true;
-      }
-      if (eclipse?.kind === "lunar" && sunNode && earthCenter) {
-        const direction = sunNode.group.position.clone().normalize().negate();
-        const length = 3.4;
-        eclipseLayer.lunarShadow.position
-          .copy(earthCenter)
-          .addScaledVector(direction, length / 2);
-        eclipseLayer.lunarShadow.quaternion.setFromUnitVectors(
-          eclipseLayer.upAxis,
-          direction,
-        );
-        eclipseLayer.lunarShadow.scale.set(1, length, 1);
-        eclipseLayer.lunarShadow.visible = true;
-      }
-    }
     if (nakshatraGroupRef.current) {
       nakshatraGroupRef.current.visible = showNakshatras;
     }

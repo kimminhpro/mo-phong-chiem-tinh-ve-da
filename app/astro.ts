@@ -21,13 +21,6 @@ export type MoonPhase = {
   phaseName: string;
 };
 
-export type EclipseState = {
-  kind: "solar" | "lunar" | null;
-  syzygyDistance: number;
-  nodeDistance: number;
-  description: string;
-};
-
 export const RASHIS = [
   ["Mesha", "Bạch Dương", "♈︎"],
   ["Vrishabha", "Kim Ngưu", "♉︎"],
@@ -152,48 +145,6 @@ export function getMoonPhase(grahas: Graha[]): MoonPhase | null {
                   : "Waning Crescent · Trăng lưỡi liềm cuối tháng";
 
   return { elongation, illumination, tithi, paksha, tithiName, phaseName };
-}
-
-const angularDistance = (first: number, second: number) =>
-  Math.abs(norm(first - second + 180) - 180);
-
-export function getEclipseState(grahas: Graha[]): EclipseState | null {
-  const sun = grahas.find((graha) => graha.id === "sun");
-  const moon = grahas.find((graha) => graha.id === "moon");
-  const rahu = grahas.find((graha) => graha.id === "rahu");
-  if (!sun || !moon || !rahu) return null;
-
-  const elongation = norm(moon.tropical - sun.tropical);
-  const solarDistance = Math.min(elongation, 360 - elongation);
-  const lunarDistance = Math.abs(elongation - 180);
-  const nodeDistance = Math.min(
-    angularDistance(moon.longitude, rahu.longitude),
-    angularDistance(moon.longitude, norm(rahu.longitude + 180)),
-  );
-  const nearNode = nodeDistance <= 18;
-
-  if (nearNode && solarDistance <= 12) {
-    return {
-      kind: "solar",
-      syzygyDistance: solarDistance,
-      nodeDistance,
-      description: "Nhật thực · Mặt Trời — Moon — Trái Đất thẳng hàng gần nút",
-    };
-  }
-  if (nearNode && lunarDistance <= 12) {
-    return {
-      kind: "lunar",
-      syzygyDistance: lunarDistance,
-      nodeDistance,
-      description: "Nguyệt thực · Mặt Trời — Trái Đất — Moon thẳng hàng gần nút",
-    };
-  }
-  return {
-    kind: null,
-    syzygyDistance: Math.min(solarDistance, lunarDistance),
-    nodeDistance,
-    description: "Không ở cửa sổ thực: Moon cần gần Sóc/Vọng và gần Rahu hoặc Ketu.",
-  };
 }
 
 export function formatDegree(longitude: number) {
