@@ -52,14 +52,17 @@ function ZodiacWheel({
   const moonPhase = getMoonPhase(grahas);
 
   return (
-    <div className="wheel-wrap" aria-label="Bản đồ 12 cung hoàng đạo">
-      <div className="wheel">
-        <div className="sector-lines" />
-        <div className="nakshatra-lines" />
-        <div className="orbit-rings" />
-        <div className="wheel-center">
-          <span>Jyotish</span>
-          <small>0° Mesha</small>
+    <div className="mandala-wrap" aria-label="Bản đồ hoàng đạo Jyotish 2D">
+      <div className="mandala">
+        <div className="mandala-stars" />
+        <div className="mandala-zodiac" />
+        <div className="mandala-nakshatra" />
+        <div className="mandala-houses" />
+        <div className="mandala-orbits" />
+        <div className="mandala-core">
+          <span>ॐ</span>
+          <strong>Jyotish</strong>
+          <small>{moonPhase ? `${Math.round(moonPhase.illumination * 100)}% Moon` : "Sidereal"}</small>
         </div>
         {grahas.length === 0 && (
           <div className="engine-loader">
@@ -77,15 +80,15 @@ function ZodiacWheel({
           );
           return (
             <div
-              className="rashi"
+              className="zodiac-sign"
               key={sanskrit}
               style={{
                 left: `${left}%`,
                 top: `${top}%`,
               }}
             >
-              <span className="rashi-symbol">{symbol}</span>
-              <span>{sanskrit}</span>
+              <span className="zodiac-symbol">{symbol}</span>
+              <span>{sanskrit.slice(0, 3)}</span>
               <small>{vietnamese}</small>
             </div>
           );
@@ -102,7 +105,7 @@ function ZodiacWheel({
           );
           return (
             <span
-              className={`house-label-2d ${houseIndex === 0 ? "active" : ""}`}
+              className={`mandala-house ${houseIndex === 0 ? "active" : ""}`}
               key={houseIndex}
               style={{ left: `${left}%`, top: `${top}%` }}
             >
@@ -111,7 +114,7 @@ function ZodiacWheel({
           );
         })}
         <span
-          className="lagna-2d"
+          className="mandala-lagna"
           style={
             {
               left: `${roundPosition(
@@ -138,7 +141,7 @@ function ZodiacWheel({
             );
             return (
               <span
-                className="nakshatra-label"
+                className="mandala-nakshatra-dot"
                 key={name}
                 aria-label={`${index + 1}. ${name}`}
                 style={{ left: `${left}%`, top: `${top}%` }}
@@ -149,7 +152,7 @@ function ZodiacWheel({
         })}
         {grahas.map((graha, index) => {
           const angle = graha.longitude;
-          const radius = 21 + (index % 3) * 4.8;
+          const radius = 27 + (index % 3) * 5.2;
           const left = roundPosition(
             50 + Math.sin((angle * Math.PI) / 180) * radius,
           );
@@ -159,7 +162,7 @@ function ZodiacWheel({
           return (
             <button
               type="button"
-              className={`planet ${selected === graha.id ? "active" : ""}`}
+              className={`mandala-planet ${selected === graha.id ? "active" : ""}`}
               key={graha.id}
               onClick={() => onSelect(graha.id)}
               aria-label={`${graha.name}, ${formatDegree(graha.longitude)}`}
@@ -168,6 +171,7 @@ function ZodiacWheel({
                   "--angle": `${roundPosition(angle)}deg`,
                   "--radius": `${radius}%`,
                   "--planet-color": graha.color,
+                  "--orbit": `${radius}%`,
                   left: `${left}%`,
                   top: `${top}%`,
                   opacity:
@@ -177,17 +181,16 @@ function ZodiacWheel({
                 } as React.CSSProperties
               }
             >
-              <span className="planet-dot">{graha.symbol}</span>
-              <span className="planet-label">{graha.name}</span>
+              <span className="mandala-planet-dot">{graha.symbol}</span>
+              <span className="mandala-planet-label">{graha.name}</span>
             </button>
           );
         })}
       </div>
-      <div className="wheel-legend">
-        <span>0°</span>
-        <span>90°</span>
-        <span>180°</span>
-        <span>270°</span>
+      <div className="mandala-caption">
+        <span><i /> Vòng Rāśi</span>
+        <span><i /> 27 Nakshatra</span>
+        <span><i /> 12 Bhāva</span>
       </div>
     </div>
   );
