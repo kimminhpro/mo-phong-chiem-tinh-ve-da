@@ -363,71 +363,6 @@ main { min-height: 100vh; padding-bottom: 102px; position: relative; }
   border: 0 !important;
 }
 
-.mandala-wrap { width: min(72vh, 720px); max-width: 100%; margin: 14px auto 8px; }
-.mandala {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  overflow: hidden;
-  isolation: isolate;
-  border: 1px solid rgba(217, 178, 102, 0.58);
-  background: radial-gradient(circle at 50% 48%, #113842 0 15%, #091f2a 36%, #06151f 70%);
-  box-shadow: inset 0 0 0 7px rgba(1, 10, 17, 0.84), inset 0 0 78px rgba(0, 0, 0, 0.62), 0 24px 70px rgba(0, 0, 0, 0.28);
-}
-.mandala-stars, .mandala-zodiac, .mandala-nakshatra, .mandala-houses, .mandala-orbits { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
-.mandala-stars { opacity: .74; background: radial-gradient(circle, #d5edf0 0 1px, transparent 1.6px) 17px 19px / 41px 41px, radial-gradient(circle, #d1a85d 0 .7px, transparent 1.2px) 4px 6px / 29px 29px; mask: radial-gradient(circle, #000 42%, transparent 74%); }
-.mandala-zodiac { background: repeating-conic-gradient(from -15deg, rgba(226, 188, 106, .37) 0 .13deg, transparent .13deg 30deg), repeating-conic-gradient(from -15deg, rgba(69, 141, 147, .16) 0 29.55deg, rgba(181, 132, 67, .14) 29.55deg 30deg); -webkit-mask: radial-gradient(circle, transparent 0 71%, #000 71.3% 96%, transparent 96.3%); mask: radial-gradient(circle, transparent 0 71%, #000 71.3% 96%, transparent 96.3%); }
-.mandala-nakshatra { background: repeating-conic-gradient(from 0deg, rgba(200, 223, 220, .54) 0 .1deg, transparent .1deg 13.333333deg); -webkit-mask: radial-gradient(circle, transparent 0 63.5%, #000 63.8% 70%, transparent 70.3%); mask: radial-gradient(circle, transparent 0 63.5%, #000 63.8% 70%, transparent 70.3%); }
-.mandala-houses { background: repeating-conic-gradient(from -15deg, rgba(107, 224, 210, .5) 0 .18deg, transparent .18deg 30deg); -webkit-mask: radial-gradient(circle, transparent 0 34%, #000 34.3% 62%, transparent 62.3%); mask: radial-gradient(circle, transparent 0 34%, #000 34.3% 62%, transparent 62.3%); }
-.mandala-orbits { inset: 25%; border: 1px dashed rgba(224, 184, 99, .33); box-shadow: 0 0 0 32px rgba(201, 230, 221, .10), 0 0 0 64px rgba(224, 184, 99, .12); }
-.mandala-core { position: absolute; left: 50%; top: 50%; z-index: 3; width: 104px; height: 104px; transform: translate(-50%, -50%); border: 1px solid rgba(224, 184, 99, .72); border-radius: 50%; display: grid; place-content: center; text-align: center; background: radial-gradient(circle, #153d44, #0a2029); box-shadow: 0 0 0 7px rgba(7, 26, 34, .9), 0 0 0 8px rgba(115, 210, 198, .28); }
-.mandala-core span { color: #f2c56f; font: 30px Georgia, serif; line-height: .9; }
-.mandala-core strong { margin-top: 5px; color: #f3e8d1; font: 700 12px Georgia, serif; letter-spacing: .1em; text-transform: uppercase; }
-.mandala-core small { margin-top: 4px; color: #8eb5b9; font-size: 8px; }
-.engine-loader {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 56px);
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 8px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.engine-loader span {
-  width: 9px;
-  height: 9px;
-  border: 1px solid var(--line-strong);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: engine-spin 800ms linear infinite;
-}
-@keyframes engine-spin {
-  to { transform: rotate(360deg); }
-}
-.zodiac-sign { position: absolute; z-index: 2; width: 68px; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; color: #dfe7e0; pointer-events: none; text-align: center; }
-.zodiac-symbol { color: #f1c86e; font: 23px Georgia, serif; line-height: 1; text-shadow: 0 0 14px rgba(241, 200, 110, .32); }
-.zodiac-sign > span:not(.zodiac-symbol) { color: #e6dac2; font: 700 clamp(8px, .9vw, 11px) Georgia, serif; letter-spacing: .06em; }
-.zodiac-sign small { color: #769da2; font-size: clamp(6px, .65vw, 8px); white-space: nowrap; }
-.mandala-nakshatra-dot { position: absolute; z-index: 2; width: 13px; height: 13px; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid rgba(201, 224, 220, .35); background: #0b2530; color: #c4d7d2; font: 6px/11px "Consolas", monospace; text-align: center; pointer-events: none; }
-.mandala-house { position: absolute; z-index: 2; min-width: 25px; padding: 4px 3px; transform: translate(-50%, -50%); border: 1px solid rgba(102, 210, 197, .25); border-radius: 999px; background: rgba(4, 25, 33, .86); color: #7eafb0; font: 700 7px "Consolas", monospace; text-align: center; pointer-events: none; }
-.mandala-house.active { color: #bcfff4; border-color: #6ce2d1; box-shadow: 0 0 14px rgba(97, 224, 207, .38); }
-.mandala-lagna { position: absolute; z-index: 5; padding: 4px 7px; transform: translate(-50%, -50%); border: 1px solid #83eadb; border-radius: 999px; background: #0b3a41; color: #d4fff8; box-shadow: 0 0 20px rgba(105, 226, 211, .48); font: 700 8px "Consolas", monospace; pointer-events: none; }
-.mandala-planet { position: absolute; width: 0; height: 0; padding: 0; border: 0; background: none; cursor: pointer; z-index: 4; }
-.mandala-planet-dot { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; transform: translate(-50%, -50%); display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--planet-color), white 12%); border-radius: 10px; color: var(--planet-color); background: linear-gradient(145deg, #123640, #071a24); box-shadow: 0 0 0 3px rgba(5, 18, 25, .83), inset 0 1px rgba(255, 255, 255, .12); font: 20px Georgia, serif; transition: transform 170ms ease, box-shadow 170ms ease; }
-.mandala-planet:hover .mandala-planet-dot, .mandala-planet.active .mandala-planet-dot { transform: translate(-50%, -50%) scale(1.2) rotate(45deg); box-shadow: 0 0 0 4px #071c25, 0 0 22px color-mix(in srgb, var(--planet-color), transparent 32%); }
-.mandala-planet.active .mandala-planet-dot { border-width: 2px; }
-.mandala-planet-label { position: absolute; top: 23px; left: 50%; transform: translateX(-50%); color: color-mix(in srgb, var(--planet-color), white 20%); font-size: 9px; white-space: nowrap; text-shadow: 0 1px 3px #000; }
-.mandala-caption { display: flex; justify-content: center; gap: 15px; margin-top: 10px; color: #759ca2; font-size: 9px; letter-spacing: .03em; }
-.mandala-caption span { display: flex; align-items: center; gap: 5px; }
-.mandala-caption i { width: 13px; height: 2px; background: #d4ae65; }
-.mandala-caption span:nth-child(2) i { height: 1px; background: #b9d8d2; }
-.mandala-caption span:nth-child(3) i { height: 3px; background: #65d4c7; }
-
 .selection-readout {
   border-top: 1px solid var(--line);
   display: grid;
@@ -673,6 +608,22 @@ aside { padding: 26px 24px 20px; }
   font-size: 8px;
   line-height: 1.45;
 }
+.sky > .d1-panel {
+  width: min(100%, 860px);
+  margin: 18px auto 8px;
+  padding: 18px;
+  background: linear-gradient(145deg, rgba(7, 31, 41, .92), rgba(5, 18, 27, .9));
+}
+.sky > .d1-panel .panel-heading h2 { font-size: 25px; }
+.sky > .d1-panel .d1-chart { aspect-ratio: 1.35; }
+.sky > .d1-panel .d1-sign { padding: 9px; }
+.sky > .d1-panel .d1-sign-head { font-size: 9px; }
+.sky > .d1-panel .d1-sign-head b { font-size: 8px; }
+.sky > .d1-panel .d1-grahas { gap: 5px; margin-top: 10px; }
+.sky > .d1-panel .d1-grahas button { min-width: 28px; min-height: 25px; font-size: 9px; }
+.sky > .d1-panel .d1-center span { font-size: 36px; }
+.sky > .d1-panel .d1-center strong { font-size: 10px; }
+.sky > .d1-panel .d1-note { font-size: 9px; }
 .positions { min-width: 0; }
 .panel-heading { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
 .panel-heading h2 { color: var(--gold); font-size: 24px; }
@@ -864,7 +815,7 @@ aside { padding: 26px 24px 20px; }
   .workspace { grid-template-columns: 1fr; }
   .sky { border-right: 0; border-bottom: 1px solid var(--line); }
   aside { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .observer-panel, .d1-panel { margin-bottom: 0; }
+  .observer-panel { margin-bottom: 0; }
   .positions, .nakshatra-catalog { grid-column: 1 / -1; }
   .method-note { margin-top: 0; align-self: start; }
 }
@@ -902,19 +853,16 @@ aside { padding: 26px 24px 20px; }
   .reset-view { min-height: 42px; }
   .coordinate-key, .coordinate-caveat { display: none; }
   .coordinate-state { display: grid; }
-  .mandala-wrap { width: min(96vw, 570px); }
-  .zodiac-sign { width: 50px; }
-  .zodiac-sign > span:not(.zodiac-symbol), .zodiac-sign small { display: none; }
-  .mandala-nakshatra-dot { width: 11px; height: 11px; font-size: 5px; line-height: 9px; }
-  .mandala-planet-dot { width: 28px; height: 28px; font-size: 16px; }
-  .mandala-planet-label { font-size: 7px; top: 18px; }
-  .mandala-core { width: 82px; height: 82px; }
-  .mandala-core span { font-size: 24px; }
-  .mandala-core strong { font-size: 10px; }
+  .sky > .d1-panel { margin-top: 14px; padding: 12px; }
+  .sky > .d1-panel .d1-chart { aspect-ratio: 1; }
+  .sky > .d1-panel .d1-sign { padding: 5px; }
+  .sky > .d1-panel .d1-sign-head { font-size: 7px; }
+  .sky > .d1-panel .d1-grahas { gap: 3px; margin-top: 6px; }
+  .sky > .d1-panel .d1-grahas button { min-width: 23px; min-height: 21px; font-size: 8px; }
   .selection-readout { grid-template-columns: auto 1fr 1fr; gap: 13px; }
   .movement-readout { display: none; }
   aside { display: block; padding: 20px 14px; }
-  .observer-panel, .d1-panel { margin-bottom: 16px; }
+  .observer-panel { margin-bottom: 16px; }
   .method-note { margin-top: 16px; }
   .time-dock {
     height: 150px;

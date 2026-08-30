@@ -28,173 +28,11 @@ const SPEEDS = [
   { label: "7 ngày / giây", value: 7 },
   { label: "30 ngày / giây", value: 30 },
 ];
-const roundPosition = (value: number) => Math.round(value * 10000) / 10000;
-
 const formatLatitude = (latitude: number) =>
   `${latitude >= 0 ? "+" : "−"}${Math.abs(latitude).toFixed(3)}°`;
 
 const formatDistance = (distance: number) =>
   `${distance < 0.01 ? distance.toFixed(6) : distance.toFixed(4)} AU`;
-
-function ZodiacWheel({
-  grahas,
-  lagnaLongitude,
-  selected,
-  showNakshatras,
-  onSelect,
-}: {
-  grahas: Graha[];
-  lagnaLongitude: number;
-  selected: string;
-  showNakshatras: boolean;
-  onSelect: (id: string) => void;
-}) {
-  const moonPhase = getMoonPhase(grahas);
-
-  return (
-    <div className="mandala-wrap" aria-label="Bản đồ hoàng đạo Jyotish 2D">
-      <div className="mandala">
-        <div className="mandala-stars" />
-        <div className="mandala-zodiac" />
-        <div className="mandala-nakshatra" />
-        <div className="mandala-houses" />
-        <div className="mandala-orbits" />
-        <div className="mandala-core">
-          <span>ॐ</span>
-          <strong>Jyotish</strong>
-          <small>{moonPhase ? `${Math.round(moonPhase.illumination * 100)}% Moon` : "Sidereal"}</small>
-        </div>
-        {grahas.length === 0 && (
-          <div className="engine-loader">
-            <span />
-            Đang nạp Swiss Ephemeris
-          </div>
-        )}
-        {RASHIS.map(([sanskrit, vietnamese, symbol], index) => {
-          const angle = index * 30 + 15;
-          const left = roundPosition(
-            50 + Math.sin((angle * Math.PI) / 180) * 42,
-          );
-          const top = roundPosition(
-            50 - Math.cos((angle * Math.PI) / 180) * 42,
-          );
-          return (
-            <div
-              className="zodiac-sign"
-              key={sanskrit}
-              style={{
-                left: `${left}%`,
-                top: `${top}%`,
-              }}
-            >
-              <span className="zodiac-symbol">{symbol}</span>
-              <span>{sanskrit.slice(0, 3)}</span>
-              <small>{vietnamese}</small>
-            </div>
-          );
-        })}
-        {Array.from({ length: 12 }, (_, houseIndex) => {
-          const signIndex =
-            (Math.floor(lagnaLongitude / 30) + houseIndex) % 12;
-          const angle = signIndex * 30 + 15;
-          const left = roundPosition(
-            50 + Math.sin((angle * Math.PI) / 180) * 14.5,
-          );
-          const top = roundPosition(
-            50 - Math.cos((angle * Math.PI) / 180) * 14.5,
-          );
-          return (
-            <span
-              className={`mandala-house ${houseIndex === 0 ? "active" : ""}`}
-              key={houseIndex}
-              style={{ left: `${left}%`, top: `${top}%` }}
-            >
-              H{houseIndex + 1}
-            </span>
-          );
-        })}
-        <span
-          className="mandala-lagna"
-          style={
-            {
-              left: `${roundPosition(
-                50 +
-                  Math.sin((lagnaLongitude * Math.PI) / 180) * 29.5,
-              )}%`,
-              top: `${roundPosition(
-                50 -
-                  Math.cos((lagnaLongitude * Math.PI) / 180) * 29.5,
-              )}%`,
-            } as React.CSSProperties
-          }
-        >
-          Lagna
-        </span>
-        {showNakshatras &&
-          NAKSHATRAS.map((name, index) => {
-            const angle = index * (360 / 27) + 360 / 54;
-            const left = roundPosition(
-              50 + Math.sin((angle * Math.PI) / 180) * 35.7,
-            );
-            const top = roundPosition(
-              50 - Math.cos((angle * Math.PI) / 180) * 35.7,
-            );
-            return (
-              <span
-                className="mandala-nakshatra-dot"
-                key={name}
-                aria-label={`${index + 1}. ${name}`}
-                style={{ left: `${left}%`, top: `${top}%` }}
-              >
-                {index + 1}
-              </span>
-            );
-        })}
-        {grahas.map((graha, index) => {
-          const angle = graha.longitude;
-          const radius = 27 + (index % 3) * 5.2;
-          const left = roundPosition(
-            50 + Math.sin((angle * Math.PI) / 180) * radius,
-          );
-          const top = roundPosition(
-            50 - Math.cos((angle * Math.PI) / 180) * radius,
-          );
-          return (
-            <button
-              type="button"
-              className={`mandala-planet ${selected === graha.id ? "active" : ""}`}
-              key={graha.id}
-              onClick={() => onSelect(graha.id)}
-              aria-label={`${graha.name}, ${formatDegree(graha.longitude)}`}
-              style={
-                {
-                  "--angle": `${roundPosition(angle)}deg`,
-                  "--radius": `${radius}%`,
-                  "--planet-color": graha.color,
-                  "--orbit": `${radius}%`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  opacity:
-                    graha.id === "moon"
-                      ? 0.16 + (moonPhase?.illumination ?? 1) * 0.84
-                      : 1,
-                } as React.CSSProperties
-              }
-            >
-              <span className="mandala-planet-dot">{graha.symbol}</span>
-              <span className="mandala-planet-label">{graha.name}</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="mandala-caption">
-        <span><i /> Vòng Rāśi</span>
-        <span><i /> 27 Nakshatra</span>
-        <span><i /> 12 Bhāva</span>
-      </div>
-    </div>
-  );
-}
 
 function PositionList({
   grahas,
@@ -295,7 +133,7 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
   const [selected, setSelected] = useState("sun");
   const [showLabels, setShowLabels] = useState(false);
   const [showNakshatras, setShowNakshatras] = useState(true);
-  const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
+  const [viewMode, setViewMode] = useState<"3d" | "d1">("3d");
   const [grahas, setGrahas] = useState<Graha[]>([]);
   const [ayanamsa, setAyanamsa] = useState<number | null>(null);
   const [lagnaLongitude, setLagnaLongitude] = useState(0);
@@ -503,12 +341,12 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
                   Thiên văn 3D
                 </button>
                 <button
-                  className={viewMode === "2d" ? "active" : ""}
+                  className={viewMode === "d1" ? "active" : ""}
                   type="button"
-                  onClick={() => setViewMode("2d")}
-                  aria-pressed={viewMode === "2d"}
+                  onClick={() => setViewMode("d1")}
+                  aria-pressed={viewMode === "d1"}
                 >
-                  Vòng tròn 2D
+                  Lá số Rāśi D1
                 </button>
               </div>
               <button
@@ -535,14 +373,13 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
               showLabels={showLabels}
               showNakshatras={showNakshatras}
               onSelect={setSelected}
-              onUnavailable={() => setViewMode("2d")}
+              onUnavailable={() => setViewMode("d1")}
             />
           ) : (
-            <ZodiacWheel
+            <D1Chart
               grahas={grahas}
               lagnaLongitude={lagnaLongitude}
               selected={selected}
-              showNakshatras={showNakshatras}
               onSelect={setSelected}
             />
           )}
@@ -621,12 +458,6 @@ export function JyotishOrbit({ initialDate }: { initialDate: string }) {
             shareStatus={shareStatus}
           />
           <MoonPhaseCard grahas={grahas} />
-          <D1Chart
-            grahas={grahas}
-            lagnaLongitude={lagnaLongitude}
-            selected={selected}
-            onSelect={setSelected}
-          />
           <PositionList
             grahas={grahas}
             selected={selected}
