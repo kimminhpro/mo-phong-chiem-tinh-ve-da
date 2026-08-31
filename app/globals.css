@@ -609,12 +609,14 @@ aside { padding: 26px 24px 20px; }
 }
 .sky > .d1-panel .d1-chart { aspect-ratio: 1; }
 .sky > .d1-panel .d1-sign { padding: 9px; }
-.sky > .d1-panel .d1-sign-head { font-size: 9px; }
-.sky > .d1-panel .d1-sign-head b { font-size: 8px; }
+.sky > .d1-panel .d1-sign-head { font-size: 11px; }
+.sky > .d1-panel .d1-sign-head b { font-size: 10px; }
 .sky > .d1-panel .d1-grahas { gap: 5px; margin-top: 10px; }
-.sky > .d1-panel .d1-grahas button { min-width: 28px; min-height: 25px; font-size: 9px; }
-.sky > .d1-panel .d1-center span { font-size: 36px; }
-.sky > .d1-panel .d1-center strong { font-size: 10px; }
+.sky > .d1-panel .d1-grahas button { min-width: 34px; min-height: 30px; font-size: 11px; }
+.sky > .d1-panel .lagna-chip { padding: 3px 5px; font-size: 9px; }
+.sky > .d1-panel .d1-center span { font-size: 48px; }
+.sky > .d1-panel .d1-center strong { font-size: 12px; }
+.sky > .d1-panel .d1-center small { font-size: 10px; }
 .positions { min-width: 0; }
 .panel-heading { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
 .panel-heading h2 { color: var(--gold); font-size: 24px; }
@@ -847,9 +849,12 @@ aside { padding: 26px 24px 20px; }
   .sky > .d1-panel { width: min(100%, 580px); margin-top: 14px; }
   .sky > .d1-panel .d1-chart { aspect-ratio: 1; }
   .sky > .d1-panel .d1-sign { padding: 5px; }
-  .sky > .d1-panel .d1-sign-head { font-size: 7px; }
+  .sky > .d1-panel .d1-sign-head { font-size: 8px; }
   .sky > .d1-panel .d1-grahas { gap: 3px; margin-top: 6px; }
-  .sky > .d1-panel .d1-grahas button { min-width: 23px; min-height: 21px; font-size: 8px; }
+  .sky > .d1-panel .d1-grahas button { min-width: 27px; min-height: 24px; font-size: 9px; }
+  .sky > .d1-panel .lagna-chip { font-size: 8px; }
+  .sky > .d1-panel .d1-center span { font-size: 38px; }
+  .sky > .d1-panel .d1-center strong { font-size: 10px; }
   .selection-readout { grid-template-columns: auto 1fr 1fr; gap: 13px; }
   .movement-readout { display: none; }
   aside { display: block; padding: 20px 14px; }
