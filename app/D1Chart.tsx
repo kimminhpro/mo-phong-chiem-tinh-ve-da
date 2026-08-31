@@ -36,6 +36,13 @@ const SHORT_NAMES: Record<string, string> = {
   ketu: "Ke",
 };
 
+const formatChartDegree = (longitude: number) => {
+  const withinSign = ((longitude % 30) + 30) % 30;
+  const degrees = Math.floor(withinSign);
+  const minutes = Math.floor((withinSign - degrees) * 60);
+  return `${String(degrees).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+};
+
 export function D1Chart({
   grahas,
   lagnaLongitude,
@@ -50,9 +57,9 @@ export function D1Chart({
         {RASHIS.map(([sanskrit, vietnamese, symbol], signIndex) => {
           const [row, column] = SOUTH_INDIAN_POSITIONS[signIndex];
           const house = ((signIndex - lagnaSign + 12) % 12) + 1;
-          const occupants = grahas.filter(
-            (graha) => Math.floor(graha.longitude / 30) === signIndex,
-          );
+          const occupants = grahas
+            .filter((graha) => Math.floor(graha.longitude / 30) === signIndex)
+            .sort((left, right) => left.longitude - right.longitude);
           return (
             <div
               className={`d1-sign ${signIndex === lagnaSign ? "lagna-sign" : ""}`}
@@ -76,10 +83,13 @@ export function D1Chart({
                     className={selected === graha.id ? "active" : ""}
                     style={{ color: graha.color }}
                     onClick={() => onSelect(graha.id)}
-                    title={`${graha.name} · ${vietnamese}`}
+                    title={`${graha.name} · ${formatChartDegree(graha.longitude)} ${vietnamese}`}
                   >
-                    {SHORT_NAMES[graha.id]}
-                    {graha.retrograde ? "℞" : ""}
+                    <span>{SHORT_NAMES[graha.id]}</span>
+                    <small>
+                      {formatChartDegree(graha.longitude)}
+                      {graha.retrograde ? " R" : ""}
+                    </small>
                   </button>
                 ))}
               </div>
